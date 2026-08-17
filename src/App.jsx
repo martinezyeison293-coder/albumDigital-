@@ -4,6 +4,7 @@ import { useAuthStore } from './store/authStore';
 import LoginPage from './pages/LoginPage';
 import AlbumPage from './pages/AlbumPage';
 import PackOpeningPage from './pages/PackOpeningPage';
+import AdminPage from './pages/AdminPage';
 
 function ProtectedRoute({ children }) {
   const { token } = useAuthStore();
@@ -14,15 +15,17 @@ function ProtectedRoute({ children }) {
 function Navbar() {
   const { token, logout, user } = useAuthStore();
   if (!token) return null;
-  
+
   return (
     <nav className="navbar">
       <div className="logo">🎴 MiÁlbum</div>
       <div className="links">
         <Link to="/">Álbum</Link>
         <Link to="/packs">Abrir Sobres</Link>
+        {user?.role === 'admin' && <Link to="/admin" className="admin-link">Admin</Link>}
       </div>
       <div className="user-info">
+        <span className="nav-credits">💠 {user?.credits ?? 0}</span>
         <span>{user?.username} (Nvl {user?.level})</span>
         <button onClick={logout} className="btn-logout">Salir</button>
       </div>
@@ -38,6 +41,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/" element={<ProtectedRoute><AlbumPage /></ProtectedRoute>} />
         <Route path="/packs" element={<ProtectedRoute><PackOpeningPage /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );

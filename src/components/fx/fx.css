@@ -1,0 +1,89 @@
+.fx-clickspark {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+}
+
+/* ShinyText */
+.fx-shiny {
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(90deg, #f1f5f9 0%, #ffd700 25%, #6c63ff 50%, #ffd700 75%, #f1f5f9 100%);
+  animation: fx-shiny-move 4s linear infinite;
+}
+@keyframes fx-shiny-move {
+  to { background-position: 200% center; }
+}
+
+/* GradientText */
+.fx-gradient-text {
+  background: linear-gradient(120deg, #6c63ff, #a855f7, #ffd700, #6c63ff);
+  background-size: 300% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: fx-shiny-move 6s linear infinite;
+}
+
+/* StarBorder */
+@property --fx-star-angle {
+  syntax: '<angle>';
+  initial-value: 0deg;
+  inherits: false;
+}
+.fx-star-border {
+  position: relative;
+  border-radius: 14px;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--fx-star-angle),
+    transparent 0deg,
+    #ffd700 60deg,
+    transparent 120deg,
+    #6c63ff 180deg,
+    transparent 240deg,
+    #a855f7 300deg,
+    transparent 360deg
+  );
+  animation: fx-rotate 4s linear infinite;
+}
+@keyframes fx-rotate {
+  to { --fx-star-angle: 360deg; }
+}
+
+/* TiltedCard */
+.fx-tilted {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* Aurora */
+.fx-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  background: #0f0f1a;
+}
+.fx-aurora .fx-aurora-blob {
+  position: absolute;
+  width: 60vmax;
+  height: 60vmax;
+  border-radius: 50%;
+  filter: blur(90px);
+  mix-blend-mode: screen;
+  opacity: 0.6;
+}
+.fx-aurora .b1 { background: radial-gradient(circle at center, #4a3f8f, transparent 60%); top: -20vmax; left: -15vmax; animation: fx-drift 22s ease-in-out infinite alternate; }
+.fx-aurora .b2 { background: radial-gradient(circle at center, #6c63ff, transparent 60%); bottom: -25vmax; right: -10vmax; animation: fx-drift 28s ease-in-out infinite alternate-reverse; }
+.fx-aurora .b3 { background: radial-gradient(circle at center, #a855f7, transparent 55%); top: 20vmax; right: 15vmax; animation: fx-drift 34s ease-in-out infinite alternate; }
+.fx-aurora .b4 { background: radial-gradient(circle at center, #3b2f6b, transparent 55%); bottom: 5vmax; left: 20vmax; animation: fx-drift 40s ease-in-out infinite alternate-reverse; }
+@keyframes fx-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(8vmax, -6vmax, 0) scale(1.15); }
+}

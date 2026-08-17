@@ -21,6 +21,10 @@ body {
   min-height: 100vh;
 }
 
+/* FX helpers */
+.fx-clickspark-wrap { position: relative; }
+.loading { text-align: center; padding: 4rem; color: var(--text-secondary); font-size: 1.2rem; }
+
 /* Navbar */
 .navbar {
   display: flex;
@@ -64,10 +68,22 @@ body {
   color: white; font-weight: bold; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
 }
 .glass-panel button:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(108, 99, 255, 0.4); }
+.welcome-hint { margin-top: 1rem; font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5; }
+.toggle-link { cursor: pointer; margin-top: 1rem; color: #94A3B8; }
+.toggle-link:hover { color: var(--primary); }
 
 /* Album Page */
 .album-page { padding: 2rem; max-width: 1200px; margin: 0 auto; }
-.album-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); }
+.album-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); flex-wrap: wrap; gap: 1rem; }
+.album-title { font-size: 1.8rem; color: var(--text-primary); }
+.album-subtitle { color: var(--text-secondary); margin-top: 0.3rem; }
+.stat-chip { display: inline-block; background: var(--glass); border: 1px solid var(--glass-border); padding: 0.35rem 0.9rem; border-radius: 999px; font-size: 0.85rem; margin-right: 0.5rem; }
+.credits-chip { color: var(--accent-gold); font-weight: bold; }
+.rarity-chip { font-size: 0.7rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--bg-main); text-transform: uppercase; }
+.rarity-chip.rarity-common { color: #9CA3AF; }
+.rarity-chip.rarity-rare { color: var(--primary); }
+.rarity-chip.rarity-epic { color: var(--accent-purple); }
+.rarity-chip.rarity-legendary { color: var(--accent-gold); }
 .stickers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
 
 .sticker-slot {
@@ -97,9 +113,11 @@ body {
 
 /* Pack Opening */
 .pack-page { padding: 2rem; text-align: center; }
-.pack-container { margin: 3rem auto; min-height: 300px; display: flex; justify-content: center; align-items: center; }
-.pack { cursor: pointer; }
-.pack img { width: 250px; border-radius: 12px; filter: drop-shadow(0 0 20px rgba(108, 99, 255, 0.5)); }
+.pack-meta { display: flex; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+.pack-cost { color: var(--text-secondary); }
+.pack-container { margin: 2rem auto; min-height: 320px; display: flex; justify-content: center; align-items: center; }
+.pack { cursor: pointer; display: inline-block; }
+.pack-img { width: 250px; border-radius: 12px; filter: drop-shadow(0 0 20px rgba(108, 99, 255, 0.5)); }
 .pack p { margin-top: 1rem; font-weight: bold; color: var(--accent-purple); }
 .pack.opening img { filter: drop-shadow(0 0 40px var(--accent-gold)); }
 
@@ -113,9 +131,33 @@ body {
 .card p { font-weight: bold; margin-bottom: 0.5rem; }
 .rarity-badge { font-size: 0.8rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--bg-main); }
 .card.rarity-common { border-color: #9CA3AF; }
-.card.rarity-rare { border-color: var(--primary); }
-.card.rarity-epic { border-color: var(--accent-purple); }
-.card.rarity-legendary { border-color: var(--accent-gold); }
+.card.rarity-rare { border-color: var(--primary); box-shadow: 0 0 18px rgba(108, 99, 255, 0.35); }
+.card.rarity-epic { border-color: var(--accent-purple); box-shadow: 0 0 25px rgba(168, 85, 247, 0.5); }
+.card.rarity-legendary { border-color: var(--accent-gold); box-shadow: 0 0 35px rgba(255, 215, 0, 0.6); }
+.card-badges { display: flex; justify-content: center; gap: 0.4rem; align-items: center; }
+.new-badge { font-size: 0.7rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; background: var(--success); color: #fff; }
+
+/* Admin */
+.admin-page { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+.admin-page h1 { margin-bottom: 1.5rem; color: var(--accent-gold); }
+.admin-denied { max-width: 420px; margin: 10vh auto; text-align: center; }
+.admin-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+.stat-card { background: var(--bg-surface); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem; text-align: center; }
+.stat-card span { display: block; color: var(--text-secondary); font-size: 0.85rem; }
+.stat-card b { font-size: 1.8rem; color: var(--primary); }
+.admin-section { margin-bottom: 2.5rem; }
+.admin-section h2 { margin-bottom: 1rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 0.5rem; }
+.admin-table { width: 100%; border-collapse: collapse; background: var(--bg-surface); border-radius: 12px; overflow: hidden; }
+.admin-table th, .admin-table td { padding: 0.7rem 1rem; text-align: left; border-bottom: 1px solid var(--glass-border); font-size: 0.85rem; }
+.admin-table th { background: var(--bg-elevated); }
+.activity-list { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+.activity-list li { display: flex; gap: 0.8rem; align-items: center; background: var(--bg-surface); padding: 0.6rem 1rem; border-radius: 8px; font-size: 0.85rem; flex-wrap: wrap; }
+.act-action { font-weight: bold; color: var(--primary); }
+.act-user { color: var(--accent-gold); }
+.act-detail { color: var(--text-secondary); flex: 1; min-width: 120px; }
+.act-time { color: var(--text-secondary); font-size: 0.75rem; }
+.admin-link { color: var(--accent-gold) !important; }
+.nav-credits { color: var(--accent-gold); font-weight: bold; margin-right: 1rem; }
 
 .btn-primary {
   padding: 1rem 3rem; font-size: 1.2rem; border-radius: 8px; border: none;
