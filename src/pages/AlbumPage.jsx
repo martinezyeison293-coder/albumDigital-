@@ -4,18 +4,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { useAlbumStore } from '../store/albumStore';
 import { laminaUrl } from '../data/laminas';
-import TiltedCard from '../components/fx/TiltedCard';
+import ProfileCard from '../components/fx/ProfileCard';
 import CountUp from '../components/fx/CountUp';
 import Confetti from '../components/fx/Confetti';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const RARITY_INFO = {
+  common: { label: 'Común', glow: 'rgba(156,163,175,0.5)' },
+  rare: { label: 'Rara', glow: 'rgba(108,99,255,0.7)' },
+  epic: { label: 'Épica', glow: 'rgba(168,85,247,0.75)' },
+  legendary: { label: 'Legendaria', glow: 'rgba(255,215,0,0.85)' }
+};
 
 export default function AlbumPage() {
   const { token, user, updateUser } = useAuthStore();
   const { album, stickers, collection, setAlbumData, updateCollection } = useAlbumStore();
   const [placing, setPlacing] = useState(null);
   const [celebrate, setCelebrate] = useState(false);
-  const [lastPlaced, setLastPlaced] = useState(null);
 
   const fetchAlbum = async () => {
     try {
@@ -37,7 +43,6 @@ export default function AlbumPage() {
       const res = await axios.post(`${API_URL}/collection/place/${stickerId}`, {}, { headers: { Authorization: `Bearer ${token}` } });
       updateCollection(res.data.collection);
       updateUser({ xp: res.data.xp, credits: res.data.credits });
-      setLastPlaced(stickerId);
       setCelebrate(true);
       setTimeout(() => setCelebrate(false), 1500);
     } catch (err) {
@@ -74,6 +79,7 @@ export default function AlbumPage() {
           const inCollection = collection?.collectedStickers.find(s => s.stickerId === sticker._id);
           const isPlaced = inCollection?.isPlaced;
           const hasUnplaced = inCollection && inCollection.quantity > 0 && !isPlaced;
+          const ri = RARITY_INFO[sticker.rarity] || RARITY_INFO.common;
 
           return (
             <AnimatePresence key={sticker._id}>
@@ -85,30 +91,20 @@ export default function AlbumPage() {
                 transition={{ type: 'spring', stiffness: 200, damping: 20 }}
               >
                 {isPlaced ? (
-                  <TiltedCard maxTilt={8}>
-                    <div className={`sticker-slot placed rarity-${sticker.rarity}`}>
-                      <div className="slot-number">#{sticker.number}</div>
-                      {lastPlaced === sticker._id ? (
-                        <motion.img
-                          key={`placed-${sticker._id}`}
-                          src={laminaUrl(sticker.image)}
-                          alt={sticker.name}
-                          className="sticker-image"
-                          initial={{ scale: 0, rotateY: 180 }}
-                          animate={{ scale: 1, rotateY: 0 }}
-                          transition={{ type: 'spring', stiffness: 120, damping: 12 }}
-                        />
-                      ) : (
-                        <img src={laminaUrl(sticker.image)} alt={sticker.name} className="sticker-image" />
-                      )}
-                      <div className="sticker-info">
-                        <span className="sticker-name">{sticker.number}</span>
-                        <span className={`rarity-chip rarity-${sticker.rarity}`}>{sticker.rarity}</span>
-                      </div>
-                    </div>
-                  </TiltedCard>
+                  <ProfileCard
+                    className="sticker-profile"
+                    avatarUrl={laminaUrl(sticker.image)}
+                    name={sticker.name}
+                    title={ri.label}
+                    handle={`#${sticker.number}`}
+                    status={ri.label}
+                    behindGlowColor={ri.glow}
+                    showUserInfo
+                    contactText={hasUnplaced ? 'Pegar' : undefined}
+                    onContactClick={hasUnplaced ? () => handlePlaceSticker(sticker._id) : undefined}
+                  />
                 ) : (
-                  <div className={`sticker-slot empty`}>
+                  <div className="sticker-slot empty">
                     <div className="slot-number">#{sticker.number}</div>
                     <div className="placeholder">?</div>
                     <div className="sticker-info">

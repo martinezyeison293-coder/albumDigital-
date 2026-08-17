@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 import Aurora from '../components/fx/Aurora';
@@ -22,27 +22,56 @@ export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [grantUser, setGrantUser] = useState('');
+  const [grantCredits, setGrantCredits] = useState('');
+  const [grantPacks, setGrantPacks] = useState('');
+  const [granting, setGranting] = useState(false);
+
+  const load = useCallback(async () => {
+    const headers = { Authorization: `Bearer ${token}` };
+    const [s, u, a] = await Promise.all([
+      axios.get(`${API_URL}/admin/stats`, { headers }),
+      axios.get(`${API_URL}/admin/users`, { headers }),
+      axios.get(`${API_URL}/admin/activity`, { headers })
+    ]);
+    setStats(s.data);
+    setUsers(u.data.users || []);
+    setActivities(a.data.activities || []);
+  }, [token]);
 
   useEffect(() => {
-    const load = async () => {
+    const init = async () => {
       try {
-        const headers = { Authorization: `Bearer ${token}` };
-        const [s, u, a] = await Promise.all([
-          axios.get(`${API_URL}/admin/stats`, { headers }),
-          axios.get(`${API_URL}/admin/users`, { headers }),
-          axios.get(`${API_URL}/admin/activity`, { headers })
-        ]);
-        setStats(s.data);
-        setUsers(u.data.users || []);
-        setActivities(a.data.activities || []);
+        await load();
       } catch (err) {
         console.error(err);
       } finally {
         setLoading(false);
       }
     };
-    load();
-  }, [token]);
+    init();
+  }, [token, load]);
+
+  const handleGrant = async (e) => {
+    e.preventDefault();
+    setGranting(true);
+    try {
+      await axios.post(`${API_URL}/admin/grant`, {
+        username: grantUser,
+        credits: Number(grantCredits) || 0,
+        packs: Number(grantPacks) || 0
+      }, { headers: { Authorization: `Bearer ${token}` } });
+      await load();
+      setGrantUser('');
+      setGrantCredits('');
+      setGrantPacks('');
+      alert('Créditos/sobres otorgados.');
+    } catch (err) {
+      alert('Error: ' + (err.response?.data?.message || err.message));
+    } finally {
+      setGranting(false);
+    }
+  };
 
   if (user?.role !== 'admin') {
     return (
@@ -68,6 +97,37 @@ export default function AdminPage() {
               <div className="stat-card"><span>Colecciones</span><b><CountUp value={stats?.collections || 0} /></b></div>
               <div className="stat-card"><span>Actividad</span><b><CountUp value={stats?.activities || 0} /></b></div>
             </div>
+
+            <section className="admin-section">
+              <h2>Otorgar créditos / sobres</h2>
+              <form className="grant-form" onSubmit={handleGrant}>
+                <input
+                  type="text"
+                  placeholder="Usuario"
+                  value={grantUser}
+                  onChange={e => setGrantUser(e.target.value)}
+                  required
+                  minLength={3}
+                />
+                <input
+                  type="number"
+                  placeholder="Créditos (+N)"
+                  min="0"
+                  value={grantCredits}
+                  onChange={e => setGrantCredits(e.target.value)}
+                />
+                <input
+                  type="number"
+                  placeholder="Sobres (+N)"
+                  min="0"
+                  value={grantPacks}
+                  onChange={e => setGrantPacks(e.target.value)}
+                />
+                <button type="submit" className="btn btn-primary" disabled={granting}>
+                  {granting ? 'Otorgando...' : 'Otorgar'}
+                </button>
+              </form>
+            </section>
 
             <section className="admin-section">
               <h2>Usuarios</h2>
