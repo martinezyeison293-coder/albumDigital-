@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export default function PackOpeningPage() {
   const { token, user, updateUser } = useAuthStore();
