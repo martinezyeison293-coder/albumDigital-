@@ -13,10 +13,10 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const PAGE_SIZE = 10;
 
 const RARITY_INFO = {
-  common: { label: 'Común', glow: 'rgba(156,163,175,0.5)' },
-  rare: { label: 'Rara', glow: 'rgba(108,99,255,0.7)' },
-  epic: { label: 'Épica', glow: 'rgba(168,85,247,0.75)' },
-  legendary: { label: 'Legendaria', glow: 'rgba(255,215,0,0.85)' }
+  common: { label: 'Común', glow: 'rgba(156,163,175,0.25)' },
+  rare: { label: 'Rara', glow: 'rgba(108,99,255,0.25)' },
+  epic: { label: 'Épica', glow: 'rgba(168,85,247,0.25)' },
+  legendary: { label: 'Legendaria', glow: 'rgba(255,215,0,0.25)' }
 };
 
 export default function AlbumPage() {
@@ -45,7 +45,7 @@ export default function AlbumPage() {
     try {
       const res = await axios.post(`${API_URL}/collection/place/${stickerId}`, {}, { headers: { Authorization: `Bearer ${token}` } });
       updateCollection(res.data.collection);
-      updateUser({ xp: res.data.xp, credits: res.data.credits });
+      updateUser({ xp: res.data.xp, credits: res.data.credits, level: res.data.level, availablePacks: res.data.availablePacks });
       setCelebrate(true);
       setTimeout(() => setCelebrate(false), 1500);
     } catch (err) {

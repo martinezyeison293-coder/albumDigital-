@@ -1,4 +1,4 @@
-const modules = import.meta.glob('../assets/laminas/*.png', { eager: true });
+const modules = import.meta.glob('../assets/laminas/*.{png,jpg,jpeg,webp,gif,jfif,PNG,JPG,JPEG,WEBP,GIF,JFIF}', { eager: true });
 
 export const laminaByFile = {};
 for (const path in modules) {

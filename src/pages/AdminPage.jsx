@@ -13,6 +13,11 @@ const ACTION_LABEL = {
   pack_open: 'Abrir sobre',
   sticker_obtained: 'Lámina obtenida',
   sticker_placed: 'Lámina pegada',
+  level_up: 'Subida de nivel',
+  trade_created: 'Intercambio propuesto',
+  trade_accepted: 'Intercambio aceptado',
+  trade_rejected: 'Intercambio rechazado',
+  trade_cancelled: 'Intercambio cancelado',
   admin_view: 'Vista admin'
 };
 

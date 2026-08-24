@@ -12,7 +12,7 @@
   --grain: none;
   --icon: none;
   --behind-gradient: none;
-  --behind-glow-color: rgba(125, 190, 255, 0.67);
+  --behind-glow-color: rgba(125, 190, 255, 0.25);
   --behind-glow-size: 25%;
   --inner-gradient: none;
   --sunpillar-1: hsl(2, 100%, 73%);
@@ -99,13 +99,15 @@
 }
 
 .pc-shine {
+  /* EFECTO HOLO DESACTIVADO TEMPORALMENTE: quitar "display: none" para reactivar */
+  display: none;
   mask-image: var(--icon);
   mask-mode: luminance;
   mask-repeat: repeat;
   mask-size: 150%;
   mask-position: top calc(200% - (var(--background-y) * 5)) left calc(100% - var(--background-x));
   transition: filter 0.8s ease;
-  filter: brightness(0.66) contrast(1.33) saturate(0.33) opacity(0.5);
+  filter: brightness(0.66) contrast(1.33) saturate(0.33) opacity(0.125);
   animation: holo-bg 18s linear infinite;
   animation-play-state: running;
   mix-blend-mode: color-dodge;
@@ -171,7 +173,7 @@
 
 .pc-card:hover .pc-shine,
 .pc-card.active .pc-shine {
-  filter: brightness(0.85) contrast(1.5) saturate(0.5);
+  filter: brightness(0.85) contrast(1.5) saturate(0.5) opacity(0.125);
   animation-play-state: paused;
 }
 
@@ -223,6 +225,8 @@
 }
 
 .pc-glare {
+  /* REFLEJO DESACTIVADO TEMPORALMENTE: quitar "display: none" para reactivar */
+  display: none;
   transform: translate3d(0, 0, 1.1px);
   overflow: hidden;
   background-image: radial-gradient(
@@ -230,13 +234,13 @@
     hsl(248, 25%, 80%) 12%,
     hsla(207, 40%, 30%, 0.8) 90%
   );
-  mix-blend-mode: overlay;
-  filter: brightness(0.8) contrast(1.2);
+  mix-blend-mode: soft-light;
+  filter: brightness(0.8) contrast(1.2) opacity(0.25);
   z-index: 4;
 }
 
 .pc-avatar-content {
-  mix-blend-mode: luminosity;
+  mix-blend-mode: normal;
   overflow: visible;
   transform: translateZ(2px);
   backface-visibility: hidden;

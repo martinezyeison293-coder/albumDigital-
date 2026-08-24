@@ -23,7 +23,7 @@ export default function LoginPage() {
       const endpoint = isRegister ? '/auth/register' : '/auth/login';
       const res = await axios.post(`${API_URL}${endpoint}`, { username, password });
       login(res.data.user, res.data.token);
-      if (isRegister) alert('¡Bienvenido! Recibiste 100 créditos para abrir sobres.');
+      if (isRegister) alert('¡Bienvenido! Recibiste 100 créditos, 3 sobres básicos + 1 extra por subir a nivel 2.');
       else if (res.data.dailyCreditsGranted) alert('¡Bono diario! +20 créditos.');
       navigate('/');
     } catch (err) {
@@ -40,6 +40,22 @@ export default function LoginPage() {
         <ClickSpark className="login-spark">
           <div className="glass-panel">
             <h1><GradientText>MiÁlbum</GradientText></h1>
+            <div className="auth-tabs">
+              <button
+                type="button"
+                className={`auth-tab${!isRegister ? ' active' : ''}`}
+                onClick={() => setIsRegister(false)}
+              >
+                Iniciar Sesión
+              </button>
+              <button
+                type="button"
+                className={`auth-tab${isRegister ? ' active' : ''}`}
+                onClick={() => setIsRegister(true)}
+              >
+                Registrarse
+              </button>
+            </div>
             <h2>{isRegister ? 'Crear Cuenta' : 'Iniciar Sesión'}</h2>
             <form onSubmit={handleSubmit}>
               <input type="text" placeholder="Usuario" value={username} onChange={e => setUsername(e.target.value)} required />
@@ -48,7 +64,7 @@ export default function LoginPage() {
             </form>
             <p className="welcome-hint">
               {isRegister
-                ? 'Al registrarte recibes 100 créditos para abrir sobres y coleccionar láminas.'
+                ? 'Al registrarte recibes 100 créditos, sobres gratis y subirás de nivel para coleccionar láminas.'
                 : 'Cada día recibes +20 créditos al iniciar sesión.'}
             </p>
             <p onClick={() => setIsRegister(!isRegister)} className="toggle-link">
