@@ -7,6 +7,7 @@ const ANIMATION_CONFIG = {
   INITIAL_DURATION: 1200,
   INITIAL_X_OFFSET: 70,
   INITIAL_Y_OFFSET: 60,
+  DEVICE_BETA_OFFSET: 20,
   ENTER_TRANSITION_MS: 180
 };
 
@@ -15,15 +16,18 @@ const round = (v, precision = 3) => parseFloat(v.toFixed(precision));
 const adjust = (v, fMin, fMax, tMin, tMax) => round(tMin + ((tMax - tMin) * (v - fMin)) / (fMax - fMin));
 
 const ProfileCardComponent = ({
-  avatarUrl,
-  iconUrl,
-  grainUrl,
+  avatarUrl = '',
+  iconUrl = '',
+  grainUrl = '',
   innerGradient,
   behindGlowEnabled = true,
   behindGlowColor,
   behindGlowSize,
   className = '',
   enableTilt = true,
+  enableMobileTilt = false,
+  mobileTiltSensitivity = 5,
+  miniAvatarUrl,
   name = 'Lámina',
   title = '',
   handle = 'mialbum',
@@ -203,6 +207,28 @@ const ProfileCardComponent = ({
     leaveRafRef.current = requestAnimationFrame(checkSettle);
   }, [tiltEngine]);
 
+  const handleDeviceOrientation = useCallback(
+    event => {
+      const shell = shellRef.current;
+      if (!shell || !tiltEngine) return;
+
+      const { beta, gamma } = event;
+      if (beta == null || gamma == null) return;
+
+      const centerX = shell.clientWidth / 2;
+      const centerY = shell.clientHeight / 2;
+      const x = clamp(centerX + gamma * mobileTiltSensitivity, 0, shell.clientWidth);
+      const y = clamp(
+        centerY + (beta - ANIMATION_CONFIG.DEVICE_BETA_OFFSET) * mobileTiltSensitivity,
+        0,
+        shell.clientHeight
+      );
+
+      tiltEngine.setTarget(x, y);
+    },
+    [tiltEngine, mobileTiltSensitivity]
+  );
+
   useEffect(() => {
     if (!enableTilt || !tiltEngine) return;
 
@@ -212,10 +238,29 @@ const ProfileCardComponent = ({
     const pointerMoveHandler = handlePointerMove;
     const pointerEnterHandler = handlePointerEnter;
     const pointerLeaveHandler = handlePointerLeave;
+    const deviceOrientationHandler = handleDeviceOrientation;
 
     shell.addEventListener('pointerenter', pointerEnterHandler);
     shell.addEventListener('pointermove', pointerMoveHandler);
     shell.addEventListener('pointerleave', pointerLeaveHandler);
+
+    const handleClick = () => {
+      if (!enableMobileTilt || location.protocol !== 'https:') return;
+      const anyMotion = window.DeviceMotionEvent;
+      if (anyMotion && typeof anyMotion.requestPermission === 'function') {
+        anyMotion
+          .requestPermission()
+          .then(state => {
+            if (state === 'granted') {
+              window.addEventListener('deviceorientation', deviceOrientationHandler);
+            }
+          })
+          .catch(console.error);
+      } else {
+        window.addEventListener('deviceorientation', deviceOrientationHandler);
+      }
+    };
+    shell.addEventListener('click', handleClick);
 
     const initialX = (shell.clientWidth || 0) - ANIMATION_CONFIG.INITIAL_X_OFFSET;
     const initialY = ANIMATION_CONFIG.INITIAL_Y_OFFSET;
@@ -227,12 +272,22 @@ const ProfileCardComponent = ({
       shell.removeEventListener('pointerenter', pointerEnterHandler);
       shell.removeEventListener('pointermove', pointerMoveHandler);
       shell.removeEventListener('pointerleave', pointerLeaveHandler);
+      shell.removeEventListener('click', handleClick);
+      window.removeEventListener('deviceorientation', deviceOrientationHandler);
       if (enterTimerRef.current) window.clearTimeout(enterTimerRef.current);
       if (leaveRafRef.current) cancelAnimationFrame(leaveRafRef.current);
       tiltEngine.cancel();
       shell.classList.remove('entering');
     };
-  }, [enableTilt, tiltEngine, handlePointerMove, handlePointerEnter, handlePointerLeave]);
+  }, [
+    enableTilt,
+    enableMobileTilt,
+    tiltEngine,
+    handlePointerMove,
+    handlePointerEnter,
+    handlePointerLeave,
+    handleDeviceOrientation
+  ]);
 
   const cardStyle = useMemo(
     () => ({
@@ -261,7 +316,7 @@ const ProfileCardComponent = ({
               <img
                 className="avatar"
                 src={avatarUrl}
-                alt={name}
+                alt={`${name || 'User'} avatar`}
                 loading="lazy"
                 onError={e => {
                   e.target.style.display = 'none';
@@ -272,11 +327,12 @@ const ProfileCardComponent = ({
                   <div className="pc-user-details">
                     <div className="pc-mini-avatar">
                       <img
-                        src={avatarUrl}
-                        alt={name}
+                        src={miniAvatarUrl || avatarUrl}
+                        alt={`${name || 'User'} mini avatar`}
                         loading="lazy"
                         onError={e => {
                           e.target.style.opacity = '0.5';
+                          e.target.src = avatarUrl;
                         }}
                       />
                     </div>

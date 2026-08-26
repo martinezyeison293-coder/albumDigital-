@@ -12,7 +12,7 @@
   --grain: none;
   --icon: none;
   --behind-gradient: none;
-  --behind-glow-color: rgba(125, 190, 255, 0.25);
+  --behind-glow-color: rgba(125, 190, 255, 0.67);
   --behind-glow-size: 25%;
   --inner-gradient: none;
   --sunpillar-1: hsl(2, 100%, 73%);
@@ -21,6 +21,12 @@
   --sunpillar-4: hsl(176, 100%, 76%);
   --sunpillar-5: hsl(228, 100%, 74%);
   --sunpillar-6: hsl(283, 100%, 73%);
+  --sunpillar-clr-1: var(--sunpillar-1);
+  --sunpillar-clr-2: var(--sunpillar-2);
+  --sunpillar-clr-3: var(--sunpillar-3);
+  --sunpillar-clr-4: var(--sunpillar-4);
+  --sunpillar-clr-5: var(--sunpillar-5);
+  --sunpillar-clr-6: var(--sunpillar-6);
   --card-radius: 18px;
 }
 
@@ -52,7 +58,8 @@
 }
 
 .pc-card {
-  height: auto;
+  height: 80svh;
+  max-height: 540px;
   display: grid;
   aspect-ratio: 0.718;
   border-radius: var(--card-radius);
@@ -99,8 +106,6 @@
 }
 
 .pc-shine {
-  /* EFECTO HOLO DESACTIVADO TEMPORALMENTE: quitar "display: none" para reactivar */
-  display: none;
   mask-image: var(--icon);
   mask-mode: luminance;
   mask-repeat: repeat;
@@ -126,13 +131,13 @@
   background-image:
     repeating-linear-gradient(
       0deg,
-      var(--sunpillar-1) calc(var(--space) * 1),
-      var(--sunpillar-2) calc(var(--space) * 2),
-      var(--sunpillar-3) calc(var(--space) * 3),
-      var(--sunpillar-4) calc(var(--space) * 4),
-      var(--sunpillar-5) calc(var(--space) * 5),
-      var(--sunpillar-6) calc(var(--space) * 6),
-      var(--sunpillar-1) calc(var(--space) * 7)
+      var(--sunpillar-clr-1) calc(var(--space) * 1),
+      var(--sunpillar-clr-2) calc(var(--space) * 2),
+      var(--sunpillar-clr-3) calc(var(--space) * 3),
+      var(--sunpillar-clr-4) calc(var(--space) * 4),
+      var(--sunpillar-clr-5) calc(var(--space) * 5),
+      var(--sunpillar-clr-6) calc(var(--space) * 6),
+      var(--sunpillar-clr-1) calc(var(--space) * 7)
     ),
     repeating-linear-gradient(
       var(--angle),
@@ -225,8 +230,6 @@
 }
 
 .pc-glare {
-  /* REFLEJO DESACTIVADO TEMPORALMENTE: quitar "display: none" para reactivar */
-  display: none;
   transform: translate3d(0, 0, 1.1px);
   overflow: hidden;
   background-image: radial-gradient(
@@ -234,13 +237,13 @@
     hsl(248, 25%, 80%) 12%,
     hsla(207, 40%, 30%, 0.8) 90%
   );
-  mix-blend-mode: soft-light;
-  filter: brightness(0.8) contrast(1.2) opacity(0.25);
+  mix-blend-mode: overlay;
+  filter: brightness(0.8) contrast(1.2);
   z-index: 4;
 }
 
 .pc-avatar-content {
-  mix-blend-mode: normal;
+  mix-blend-mode: luminosity;
   overflow: visible;
   transform: translateZ(2px);
   backface-visibility: hidden;
@@ -261,9 +264,19 @@
   transition: transform 120ms ease-out;
 }
 
+.pc-avatar-content::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
 .pc-user-info {
   position: absolute;
   --ui-inset: 10px;
+  --ui-radius-bias: 6px;
   bottom: var(--ui-inset);
   left: var(--ui-inset);
   right: var(--ui-inset);
@@ -274,7 +287,7 @@
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(30px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
+  border-radius: calc(max(0px, var(--card-radius) - var(--ui-inset) + var(--ui-radius-bias)));
   padding: 7px 9px;
   pointer-events: auto;
 }
@@ -416,7 +429,6 @@
   }
 }
 
-/* Sticker profile variant: portrait fit for grid slots */
 .pc-card-wrapper.sticker-profile {
   width: 100%;
 }
@@ -424,4 +436,114 @@
   height: 100%;
   max-height: none;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  .pc-card:not(.sticker-profile .pc-card) {
+    height: 70svh;
+    max-height: 450px;
+  }
+  .pc-details:not(.sticker-profile .pc-details) {
+    top: 2em;
+  }
+  .pc-details h3:not(.sticker-profile .pc-details h3) {
+    font-size: min(4svh, 2.5em);
+  }
+  .pc-details p:not(.sticker-profile .pc-details p) {
+    font-size: 14px;
+  }
+  .pc-user-info:not(.sticker-profile .pc-user-info) {
+    --ui-inset: 15px;
+    padding: 10px 12px;
+  }
+  .pc-mini-avatar:not(.sticker-profile .pc-mini-avatar) {
+    width: 28px;
+    height: 28px;
+  }
+  .pc-user-details:not(.sticker-profile .pc-user-details) {
+    gap: 10px;
+  }
+  .pc-handle:not(.sticker-profile .pc-handle) {
+    font-size: 13px;
+  }
+  .pc-status:not(.sticker-profile .pc-status) {
+    font-size: 10px;
+  }
+  .pc-contact-btn:not(.sticker-profile .pc-contact-btn) {
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .pc-card:not(.sticker-profile .pc-card) {
+    height: 60svh;
+    max-height: 380px;
+  }
+  .pc-details:not(.sticker-profile .pc-details) {
+    top: 1.5em;
+  }
+  .pc-details h3:not(.sticker-profile .pc-details h3) {
+    font-size: min(3.5svh, 2em);
+  }
+  .pc-details p:not(.sticker-profile .pc-details p) {
+    font-size: 12px;
+    top: -8px;
+  }
+  .pc-user-info:not(.sticker-profile .pc-user-info) {
+    --ui-inset: 12px;
+    padding: 8px 10px;
+  }
+  .pc-mini-avatar:not(.sticker-profile .pc-mini-avatar) {
+    width: 24px;
+    height: 24px;
+  }
+  .pc-user-details:not(.sticker-profile .pc-user-details) {
+    gap: 8px;
+  }
+  .pc-handle:not(.sticker-profile .pc-handle) {
+    font-size: 12px;
+  }
+  .pc-status:not(.sticker-profile .pc-status) {
+    font-size: 9px;
+  }
+  .pc-contact-btn:not(.sticker-profile .pc-contact-btn) {
+    padding: 5px 10px;
+    font-size: 10px;
+    border-radius: 50px;
+  }
+}
+
+@media (max-width: 320px) {
+  .pc-card:not(.sticker-profile .pc-card) {
+    height: 55svh;
+    max-height: 320px;
+  }
+  .pc-details h3:not(.sticker-profile .pc-details h3) {
+    font-size: min(3svh, 1.5em);
+  }
+  .pc-details p:not(.sticker-profile .pc-details p) {
+    font-size: 11px;
+  }
+  .pc-user-info:not(.sticker-profile .pc-user-info) {
+    padding: 6px 8px;
+  }
+  .pc-mini-avatar:not(.sticker-profile .pc-mini-avatar) {
+    width: 20px;
+    height: 20px;
+  }
+  .pc-user-details:not(.sticker-profile .pc-user-details) {
+    gap: 6px;
+  }
+  .pc-handle:not(.sticker-profile .pc-handle) {
+    font-size: 11px;
+  }
+  .pc-status:not(.sticker-profile .pc-status) {
+    font-size: 8px;
+  }
+  .pc-contact-btn:not(.sticker-profile .pc-contact-btn) {
+    padding: 4px 8px;
+    font-size: 9px;
+    border-radius: 50px;
+  }
 }

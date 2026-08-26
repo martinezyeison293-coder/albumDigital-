@@ -2,11 +2,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuthStore } from '../store/authStore';
 import { laminaUrl } from '../data/laminas';
+import ProfileCard from '../components/fx/ProfileCard';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const PACK_LABELS = { basic: 'Básico', premium: 'Premium', legendary: 'Legendario' };
 const RARITY_LABELS = { common: 'Común', rare: 'Rara', epic: 'Épica', legendary: 'Legendaria' };
+const RARITY_GLOW = {
+  common: 'rgba(156,163,175,0.25)',
+  rare: 'rgba(108,99,255,0.25)',
+  epic: 'rgba(168,85,247,0.25)',
+  legendary: 'rgba(255,215,0,0.25)'
+};
 const STATUS_INFO = {
   pending: { label: 'Pendiente', cls: 'badge-pending' },
   accepted: { label: 'Aceptado', cls: 'badge-accepted' },
@@ -19,16 +26,26 @@ function itemKey(item) {
 }
 
 function StickerPick({ sticker, selected, onToggle }) {
+  const glow = RARITY_GLOW[sticker.rarity] || RARITY_GLOW.common;
   return (
-    <button
-      type="button"
+    <div
       className={`trade-sticker${selected ? ' selected' : ''}`}
       onClick={onToggle}
       title={`${sticker.name} · ${RARITY_LABELS[sticker.rarity] || sticker.rarity}`}
+      style={{ cursor: 'pointer' }}
     >
-      <img src={laminaUrl(sticker.image)} alt={sticker.name} loading="lazy" />
-      <span className="trade-sticker-num">#{sticker.number}</span>
-    </button>
+      <ProfileCard
+        className="sticker-profile"
+        avatarUrl={laminaUrl(sticker.image)}
+        name={sticker.name}
+        title={RARITY_LABELS[sticker.rarity] || sticker.rarity}
+        handle={`#${sticker.number}`}
+        status={RARITY_LABELS[sticker.rarity] || sticker.rarity}
+        behindGlowColor={glow}
+        showUserInfo
+        enableTilt={false}
+      />
+    </div>
   );
 }
 
