@@ -112,7 +112,7 @@
   mask-size: 150%;
   mask-position: top calc(200% - (var(--background-y) * 5)) left calc(100% - var(--background-x));
   transition: filter 0.8s ease;
-  filter: brightness(1.2) contrast(2) saturate(1) opacity(0.9);
+  filter: brightness(0.7) contrast(2.5) saturate(1.8) opacity(0.85);
   animation: holo-bg 18s linear infinite;
   animation-play-state: running;
   mix-blend-mode: color-dodge;
@@ -178,7 +178,7 @@
 
 .pc-card:hover .pc-shine,
 .pc-card.active .pc-shine {
-  filter: brightness(1.5) contrast(2.2) saturate(1.2) opacity(1);
+  filter: brightness(0.8) contrast(3) saturate(2) opacity(1);
   animation-play-state: paused;
 }
 
@@ -211,8 +211,8 @@
     center,
     calc(var(--pointer-x) * 0.01) calc(var(--pointer-y) * 0.01);
   background-blend-mode: color-dodge;
-  filter: brightness(calc(2.5 - var(--pointer-from-center))) contrast(calc(var(--pointer-from-center) + 2.5))
-    saturate(calc(0.8 + var(--pointer-from-center)));
+  filter: brightness(calc(2 - var(--pointer-from-center))) contrast(calc(var(--pointer-from-center) + 2.5))
+    saturate(calc(1.2 + var(--pointer-from-center)));
   mix-blend-mode: luminosity;
 }
 
@@ -226,7 +226,7 @@
     700% 700%,
     100% 100%;
   mix-blend-mode: difference;
-  filter: brightness(1.2) contrast(2);
+  filter: brightness(0.9) contrast(2.5);
 }
 
 .pc-glare {
@@ -234,12 +234,12 @@
   overflow: hidden;
   background-image: radial-gradient(
     farthest-corner circle at var(--pointer-x) var(--pointer-y),
-    hsl(248, 25%, 95%) 8%,
-    hsla(207, 40%, 60%, 0.9) 40%,
-    hsla(0, 0%, 0%, 0.3) 90%
+    hsl(260, 80%, 75%) 8%,
+    hsl(200, 60%, 50%) 30%,
+    hsla(0, 0%, 0%, 0.4) 90%
   );
   mix-blend-mode: overlay;
-  filter: brightness(1.5) contrast(2) opacity(0.85);
+  filter: brightness(0.9) contrast(2.5) opacity(0.7);
   z-index: 4;
 }
 
