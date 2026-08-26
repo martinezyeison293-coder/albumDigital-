@@ -42,6 +42,7 @@ function StickerPick({ sticker, selected, onToggle }) {
         title={RARITY_LABELS[sticker.rarity] || sticker.rarity}
         handle={`#${sticker.number}`}
         status={RARITY_LABELS[sticker.rarity] || sticker.rarity}
+        rarity={sticker.rarity}
         behindGlowColor={glow}
         showUserInfo
         enableTilt={false}

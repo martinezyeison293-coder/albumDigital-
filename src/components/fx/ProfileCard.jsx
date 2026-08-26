@@ -34,6 +34,7 @@ const ProfileCardComponent = ({
   status = '',
   contactText = '',
   showUserInfo = true,
+  rarity = '',
   onContactClick
 }) => {
   const wrapRef = useRef(null);
@@ -312,6 +313,7 @@ const ProfileCardComponent = ({
           <div className="pc-inside">
             <div className="pc-shine" />
             <div className="pc-glare" />
+            {rarity && <span className={`pc-rarity-badge pc-rarity-${rarity}`}>{rarity}</span>}
             <div className="pc-content pc-avatar-content">
               <img
                 className="avatar"

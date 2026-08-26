@@ -135,6 +135,7 @@ export default function AlbumPage() {
                           title={ri.label}
                           handle={`#${sticker.number}`}
                           status={ri.label}
+                          rarity={sticker.rarity}
                           behindGlowColor={ri.glow}
                           showUserInfo
                           contactText={hasUnplaced ? 'Pegar' : undefined}

@@ -197,6 +197,7 @@ export default function PackOpeningPage() {
                       title={rarityLabel[sticker.rarity]}
                       handle={`#${sticker.number}`}
                       status={isNew(sticker) ? '¡NUEVA!' : rarityLabel[sticker.rarity]}
+                      rarity={sticker.rarity}
                       behindGlowColor={ri.glow}
                       contactText={isNew(sticker) ? 'NUEVA' : 'REPETIDA'}
                     />
