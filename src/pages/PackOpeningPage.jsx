@@ -192,6 +192,7 @@ export default function PackOpeningPage() {
                     <ProfileCard
                       className="sticker-profile"
                       avatarUrl={laminaUrl(sticker.image)}
+                      iconUrl={laminaUrl(sticker.image)}
                       name={sticker.name}
                       title={rarityLabel[sticker.rarity]}
                       handle={`#${sticker.number}`}

@@ -37,6 +37,7 @@ function StickerPick({ sticker, selected, onToggle }) {
       <ProfileCard
         className="sticker-profile"
         avatarUrl={laminaUrl(sticker.image)}
+        iconUrl={laminaUrl(sticker.image)}
         name={sticker.name}
         title={RARITY_LABELS[sticker.rarity] || sticker.rarity}
         handle={`#${sticker.number}`}

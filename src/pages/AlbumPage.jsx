@@ -130,6 +130,7 @@ export default function AlbumPage() {
                         <ProfileCard
                           className="sticker-profile"
                           avatarUrl={laminaUrl(sticker.image)}
+                          iconUrl={laminaUrl(sticker.image)}
                           name={sticker.name}
                           title={ri.label}
                           handle={`#${sticker.number}`}
