@@ -42,7 +42,14 @@ body {
 .btn-logout:hover { background: var(--primary); color: #fff; }
 
 /* Login / Glass Panels */
-.login-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; }
+.login-bg {
+  position: fixed;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: -2;
+}
+.login-container { display: flex; justify-content: center; align-items: center; min-height: 80vh; position: relative; z-index: 1; }
 .glass-panel {
   background: var(--glass);
   backdrop-filter: blur(16px);

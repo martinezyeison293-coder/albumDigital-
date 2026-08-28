@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Aurora from '../components/fx/Aurora';
 import GradientText from '../components/fx/GradientText';
 import ClickSpark from '../components/fx/ClickSpark';
+import fondoLogin from '../assets/fondo-login.jpeg';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -35,6 +36,10 @@ export default function LoginPage() {
 
   return (
     <>
+      <div
+        className="login-bg"
+        style={{ backgroundImage: `linear-gradient(rgba(10,10,22,0.5), rgba(10,10,22,0.5)), url(${fondoLogin})` }}
+      />
       <Aurora />
       <div className="login-container">
         <ClickSpark className="login-spark">

@@ -68,7 +68,6 @@
   inset: 0;
   z-index: -1;
   overflow: hidden;
-  background: #0f0f1a;
 }
 .fx-aurora .fx-aurora-blob {
   position: absolute;
