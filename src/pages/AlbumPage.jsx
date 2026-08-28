@@ -202,7 +202,7 @@ export default function AlbumPage() {
 
         <div className="album-book-wrap">
           <div className="album-book">
-        <AnimatePresence mode="popLayout">
+        <AnimatePresence mode="wait">
           <motion.div
             key={page}
             className="album-page-flip"
