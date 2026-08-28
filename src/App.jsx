@@ -103,7 +103,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<Navigate to="/album" replace />} />
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/album" element={<ProtectedRoute><AlbumPage /></ProtectedRoute>} />
           <Route path="/packs" element={<ProtectedRoute><PackOpeningPage /></ProtectedRoute>} />
           <Route path="/trades" element={<ProtectedRoute><TradesPage /></ProtectedRoute>} />
