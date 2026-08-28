@@ -84,7 +84,7 @@ body {
 .rarity-chip.rarity-rare { color: var(--primary); }
 .rarity-chip.rarity-epic { color: var(--accent-purple); }
 .rarity-chip.rarity-legendary { color: var(--accent-gold); }
-.stickers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+.stickers-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 1.5rem; }
 
 /* Album as a book: 6 sections / pages of 10 slots */
 .album-book { perspective: 1600px; margin-bottom: 1.5rem; }
@@ -145,6 +145,18 @@ body {
   transition: background 0.3s;
 }
 .btn-place:hover { background: var(--accent-purple); }
+
+/* ===== Drag & drop lámina → slot del álbum ===== */
+.sticker-slot-wrap { position: relative; border-radius: 12px; transition: box-shadow 0.2s, transform 0.2s; }
+.sticker-slot-wrap .sticker-slot { border-radius: 12px; }
+.sticker-slot-wrap.drop-target { box-shadow: 0 0 0 3px var(--accent-gold), 0 0 25px rgba(255, 215, 0, 0.45); }
+.sticker-slot-wrap.can-drop { cursor: grabbing; }
+.sticker-slot-wrap.can-drop .sticker-slot.empty { border-color: var(--success); background: rgba(16, 185, 129, 0.08); }
+.drop-hint { display: inline-block; font-weight: bold; color: var(--success); background: rgba(16,185,129,0.12); padding: 0.2rem 0.7rem; border-radius: 999px; font-size: 0.8rem; animation: drop-pulse 1s ease-in-out infinite; }
+@keyframes drop-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+.openpack-target { font-size: 0.75rem; color: var(--text-secondary); }
+.openpack-target.ok { color: var(--success); font-weight: bold; }
 
 /* Pack Opening */
 .pack-page { padding: 2rem; text-align: center; }
@@ -208,6 +220,206 @@ body {
   z-index: 4;
 }
 .pack-hint { margin-top: 1.2rem; font-weight: 500; color: var(--text-secondary); font-size: 0.9rem; max-width: 260px; line-height: 1.4; }
+
+/* ===== PackOpener — rasgado superior realista ===== */
+.pack-opener {
+  position: relative;
+  width: 260px;
+  height: 300px;
+  margin: 0 auto;
+  cursor: grabbing;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pack-opener.disabled { cursor: not-allowed; }
+.opener-img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; user-select: none; -webkit-user-select: none; }
+
+.opener-envelope {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.55));
+}
+.opener-envelope .opener-img { position: absolute; inset: 0; }
+
+.opener-flap {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  transform-origin: center top;
+  transition: transform 0.2s ease;
+  will-change: transform;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.4));
+}
+.opener-flap .opener-img { position: absolute; inset: 0; }
+
+/* Láminas que se asoman por la abertura del sobre */
+.opener-stickers {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow: hidden;
+}
+.opener-sticker {
+  width: 64px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 6px;
+  margin: 0 -16px;
+  transform: translateY(-26px) rotate(calc((var(--i) - 2) * 6deg));
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  background: var(--bg-surface);
+  background-size: cover;
+  background-position: center;
+  border: 2px solid rgba(108, 99, 255, 0.5);
+  display: grid;
+  place-items: center;
+}
+.opener-sticker:not(:has(img)) {
+  background-image: linear-gradient(135deg, #2a2a45 0%, #6c63ff 50%, #a855f7 100%);
+}
+.opener-sticker-back {
+  width: 60%;
+  height: 60%;
+  border-radius: 4px;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.25), transparent 70%);
+}
+
+.opener-glow {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: 14px;
+  background: radial-gradient(ellipse at 50% 0%, rgba(255, 215, 0, 0.5), rgba(108, 99, 255, 0.22) 45%, transparent 75%);
+  pointer-events: none;
+}
+.opener-hint { top: -8px; }
+
+.opener-done {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 6;
+  background: rgba(16, 185, 129, 0.95);
+  color: #fff;
+  font-weight: bold;
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+/* Mirando dentro del sobre */
+.opening-overlay { display: flex; flex-direction: column; align-items: center; gap: 1rem; min-height: 320px; justify-content: center; }
+
+/* Botones post-apertura */
+.reveal-actions { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; align-items: center; }
+.btn-ghost {
+  padding: 0.9rem 1.8rem; font-size: 1rem; border-radius: 8px; border: 1px solid var(--glass-border);
+  background: transparent; color: var(--text-secondary); cursor: pointer; transition: opacity 0.2s;
+}
+.btn-ghost:hover { opacity: 0.8; }
+
+/* ===== Sobre abierto al lado del álbum ===== */
+.album-book-wrap {
+  flex: 1;
+  min-width: 0;
+}
+.album-with-pack {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+.open-pack {
+  flex: 0 0 320px;
+  max-width: 320px;
+  position: sticky;
+  top: 1rem;
+  background:
+    linear-gradient(160deg, rgba(108, 99, 255, 0.12), rgba(168, 85, 247, 0.05)),
+    var(--bg-surface);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+.open-pack-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.8rem; }
+.open-pack-head h2 { margin: 0; font-size: 1.05rem; color: var(--accent-gold); display: flex; align-items: center; gap: 0.4rem; }
+.openpack-count { color: var(--text-secondary); font-size: 0.85rem; }
+
+.open-pack-envelope {
+  position: relative;
+  border-radius: 14px;
+  padding: 1rem;
+  background:
+    linear-gradient(160deg, rgba(108,99,255,0.08), transparent 60%),
+    var(--bg-elevated);
+  border: 2px solid var(--glass-border);
+  min-height: 220px;
+}
+.open-pack-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(180deg, rgba(255, 215, 0, 0.25), transparent);
+  border-bottom: 2px dashed rgba(255, 215, 0, 0.3);
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  pointer-events: none;
+}
+.open-pack-stickers {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin-top: 1.4rem;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 0.2rem;
+}
+.open-pack-sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.6rem;
+  background: var(--bg-surface);
+  border: 2px solid var(--glass-border);
+  border-radius: 12px;
+  padding: 0.6rem;
+  cursor: grab;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  box-shadow: 0 0 14px var(--card-glow, transparent);
+}
+.open-pack-sticker:hover { transform: translateY(-3px); border-color: var(--pack-glow, var(--primary)); }
+.open-pack-sticker:active { cursor: grabbing; }
+.open-pack-sticker.dragging { opacity: 0.5; transform: scale(0.96); }
+.open-pack-sticker-img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; display: block; }
+.open-pack-sticker-body { display: flex; flex-direction: column; gap: 0.4rem; align-items: stretch; }
+.open-pack-sticker-body .btn-place { width: 100%; }
+.openpack-rarity { font-size: 0.75rem; font-weight: bold; padding: 0.2rem 0.6rem; border-radius: 999px; text-transform: capitalize; align-self: center; }
+.openpack-rarity.rarity-common { background: rgba(156, 163, 175, 0.2); color: #9CA3AF; }
+.openpack-rarity.rarity-rare { background: rgba(59, 130, 246, 0.2); color: #60A5FA; }
+.openpack-rarity.rarity-epic { background: rgba(168, 85, 247, 0.2); color: #C084FC; }
+.openpack-rarity.rarity-legendary { background: rgba(255, 215, 0, 0.2); color: #FFD700; }
+.openpack-target { font-size: 0.8rem; color: var(--text-secondary); text-align: center; line-height: 1.3; }
+.openpack-target.ok { color: var(--success); font-weight: bold; }
+.open-pack-hint { margin-top: 0.9rem; font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4; text-align: center; }
+
+@media (max-width: 860px) {
+  .album-with-pack { flex-direction: column; }
+  .open-pack { flex: 1 1 auto; max-width: none; position: static; width: 100%; }
+  .open-pack-stickers { flex-direction: row; flex-wrap: wrap; max-height: none; justify-content: center; }
+  .open-pack-sticker { flex: 1 1 190px; text-align: center; }
+}
 
 .revealed-stickers h3 { margin-bottom: 2rem; font-size: 2rem; color: var(--accent-gold); }
 .stickers-row { display: flex; justify-content: center; gap: 1.6rem; flex-wrap: wrap; margin-bottom: 3rem; }

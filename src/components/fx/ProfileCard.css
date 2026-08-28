@@ -191,7 +191,6 @@
   mix-blend-mode: overlay;
   filter: brightness(1.3);
 }
-}
 
 .pc-glare {
   transform: translate3d(0, 0, 1.1px);

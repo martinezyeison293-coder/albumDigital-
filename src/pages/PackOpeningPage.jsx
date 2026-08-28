@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { useAlbumStore } from '../store/albumStore';
 import { motion, AnimatePresence } from 'framer-motion';
 import { laminaByFile, laminaUrl } from '../data/laminas';
+import PackOpener from '../components/PackOpener';
 import Confetti from '../components/fx/Confetti';
 import CountUp from '../components/fx/CountUp';
 import ProfileCard from '../components/fx/ProfileCard';
-import PackTear from '../components/PackTear';
+import PixelBlast from '../components/fx/PixelBlast';
 import LevelUpOverlay from '../components/progression/LevelUpOverlay';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -45,11 +48,15 @@ const PACK_TYPES = {
 
 export default function PackOpeningPage() {
   const { token, user, updateUser } = useAuthStore();
+  const { setOpenPack } = useAlbumStore();
+  const navigate = useNavigate();
   const [packType, setPackType] = useState('basic');
   const [opening, setOpening] = useState(false);
   const [revealedStickers, setRevealedStickers] = useState([]);
   const [newOnes, setNewOnes] = useState([]);
+  const [tornPack, setTornPack] = useState([]);
   const [celebrate, setCelebrate] = useState(false);
+  const [blast, setBlast] = useState(null);
   const [xpGained, setXpGained] = useState(0);
   const [levelUp, setLevelUp] = useState(null);
 
@@ -86,6 +93,8 @@ export default function PackOpeningPage() {
       setTimeout(() => {
         setOpening(false);
         setRevealedStickers(res.data.obtainedStickers);
+        setTornPack(res.data.obtainedStickers);
+        setOpenPack(res.data.obtainedStickers);
         setXpGained(res.data.xpGained || 0);
         if (res.data.leveledUp) {
           setLevelUp({
@@ -101,6 +110,11 @@ export default function PackOpeningPage() {
         if (hasSpecial) {
           setCelebrate(true);
           setTimeout(() => setCelebrate(false), 3000);
+          const topRarity = res.data.obtainedStickers.some((s) => s.rarity === 'legendary')
+            ? 'legendary'
+            : 'epic';
+          setBlast(topRarity);
+          setTimeout(() => setBlast(null), 1600);
         }
       }, 2200);
     } catch (err) {
@@ -117,6 +131,7 @@ export default function PackOpeningPage() {
   return (
     <div className="pack-page">
       <Confetti active={celebrate} />
+      <PixelBlast active={!!blast} rarity={blast || 'epic'} />
       <h2>Abrir Sobres</h2>
       <div className="pack-meta">
         <span className="stat-chip">
@@ -151,19 +166,27 @@ export default function PackOpeningPage() {
       <div className="pack-container">
         {!opening && revealedStickers.length === 0 && (
           <div className={`pack idle-pack pack-${packType}`}>
-            <PackTear src={PACK_IMG} onOpen={handleOpenPack} disabled={!canOpen() || opening} />
-            <p className="pack-hint">Mantén presionado y arrastra hacia un lado para rasgar el sobre</p>
+            <PackOpener
+              src={PACK_IMG}
+              stickers={tornPack.map((s) => laminaUrl(s.image))}
+              onTorn={handleOpenPack}
+              disabled={!canOpen() || opening}
+            />
+            <p className="pack-hint">Toma la punta del sobre y arrástrala hacia un lado para rasgarlo</p>
           </div>
         )}
 
-        {opening && (
-          <motion.div
-            className={`pack opening pack-${packType}`}
-            animate={{ rotate: [0, -12, 12, -12, 12, 0], scale: [1, 1.15, 1] }}
-            transition={{ duration: 0.6, repeat: Infinity }}
-          >
-            <img src={PACK_IMG} alt="Abriendo..." className="pack-img" />
-          </motion.div>
+        {opening && !revealedStickers.length && (
+          <div className="opening-overlay">
+            <motion.div
+              className={`pack opening pack-${packType}`}
+              animate={{ scale: [1, 1.1, 1], opacity: [1, 0.6, 1] }}
+              transition={{ duration: 0.8, repeat: Infinity }}
+            >
+              <img src={PACK_IMG} alt="Abriendo..." className="pack-img" />
+            </motion.div>
+            <p className="pack-hint">Mirando dentro del sobre…</p>
+          </div>
         )}
       </div>
 
@@ -205,9 +228,14 @@ export default function PackOpeningPage() {
                 );
               })}
             </div>
-            <button className="btn-primary" onClick={() => setRevealedStickers([])}>
-              Continuar
-            </button>
+            <div className="reveal-actions">
+              <button className="btn-primary" onClick={() => navigate('/album')}>
+                Llévalo al álbum y pega tus láminas
+              </button>
+              <button className="btn-ghost" onClick={() => setRevealedStickers([])}>
+                Seguir abriendo sobres
+              </button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

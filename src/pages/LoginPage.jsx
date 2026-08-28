@@ -25,7 +25,7 @@ export default function LoginPage() {
       login(res.data.user, res.data.token);
       if (isRegister) alert('¡Bienvenido! Recibiste 100 créditos, 3 sobres básicos + 1 extra por subir a nivel 2.');
       else if (res.data.dailyCreditsGranted) alert('¡Bono diario! +20 créditos.');
-      navigate('/');
+      navigate('/album');
     } catch (err) {
       alert('Error: ' + (err.response?.data?.message || err.message));
     } finally {

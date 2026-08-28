@@ -33,7 +33,7 @@ class ErrorBoundary extends React.Component {
             {this.state.error?.toString()}
           </pre>
           <button
-            onClick={() => { this.setState({ error: null }); window.location.href = '/'; }}
+            onClick={() => { this.setState({ error: null }); window.location.href = '/album'; }}
             style={{ padding: '0.7rem 1.5rem', background: '#6C63FF', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}
           >
             Volver al inicio
@@ -81,7 +81,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="logo">🎴 MiÁlbum</div>
       <div className="links">
-        <Link to="/">Álbum</Link>
+        <Link to="/album">Álbum</Link>
         <Link to="/packs">Abrir Sobres</Link>
         <Link to="/trades">Intercambios</Link>
         {user?.role === 'admin' && <Link to="/admin" className="admin-link">Admin</Link>}
@@ -103,7 +103,8 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/" element={<ProtectedRoute><AlbumPage /></ProtectedRoute>} />
+          <Route path="/" element={<Navigate to="/album" replace />} />
+          <Route path="/album" element={<ProtectedRoute><AlbumPage /></ProtectedRoute>} />
           <Route path="/packs" element={<ProtectedRoute><PackOpeningPage /></ProtectedRoute>} />
           <Route path="/trades" element={<ProtectedRoute><TradesPage /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPage /></ProtectedRoute>} />
