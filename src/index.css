@@ -69,6 +69,11 @@ body {
   background: var(--bg-surface); color: var(--text-primary); outline: none;
 }
 .glass-panel input:focus { border-color: var(--primary); }
+.glass-panel input.masked-password {
+  -webkit-text-security: disc;
+  -moz-text-security: disc;
+  text-security: disc;
+}
 .glass-panel button {
   padding: 1rem; border-radius: 8px; border: none;
   background: linear-gradient(135deg, var(--primary), var(--accent-purple));

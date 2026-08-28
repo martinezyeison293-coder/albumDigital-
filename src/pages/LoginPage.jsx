@@ -64,7 +64,7 @@ export default function LoginPage() {
             <h2>{isRegister ? 'Crear Cuenta' : 'Iniciar Sesión'}</h2>
             <form onSubmit={handleSubmit}>
               <input type="text" placeholder="Usuario" value={username} onChange={e => setUsername(e.target.value)} required />
-              <input type="password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required />
+              <input type="text" inputMode="text" autoComplete="off" className="masked-password" placeholder="Contraseña" value={password} onChange={e => setPassword(e.target.value)} required />
               <button type="submit" disabled={loading}>{loading ? '...' : (isRegister ? 'Registrarse' : 'Entrar')}</button>
             </form>
             <p className="welcome-hint">
